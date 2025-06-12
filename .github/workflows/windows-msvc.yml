@@ -42,7 +42,7 @@ jobs:
       - name: Create Build Environment & Configure Cmake
         shell: bash
         working-directory: ./build
-        # -DBUILD_TESTING=ON Removed, 
+        # -DBUILD_TESTING=ON Removed,
         # Due to unittest by GTest in windows runner will comes out 'error MSB3073'
         run: |
           [[ ${{ matrix.link }} == "SHARED" ]] && shared="ON" || shared="OFF"
@@ -60,3 +60,9 @@ jobs:
         # multi config build using --config to switch Release|Debug
         run: |
           cmake --build . --config ${{matrix.build-type}} --parallel
+
+      - name: Archive build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: trantor-artifacts-${{matrix.link}}-${{matrix.build-type}}-${{matrix.tls-provider}}-${{ matrix.os }}
+          path: ./build/

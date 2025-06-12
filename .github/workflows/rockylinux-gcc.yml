@@ -10,7 +10,7 @@ jobs:
   build:
     name: '${{matrix.link}}-${{matrix.build-type}}-${{matrix.tls-provider}}'
     runs-on: ubuntu-latest
-    container: 
+    container:
       image: rockylinux:9.3
       options: --user root
     strategy:
@@ -37,8 +37,8 @@ jobs:
     - name: Install dependencies - OpenSSL
       if: matrix.tls-provider == 'openssl'
       run: |
-        dnf install openssl-devel -y  
-        
+        dnf install openssl-devel -y
+
     - name: Install gtest
       run: |
         wget https://github.com/google/googletest/archive/refs/tags/v1.13.0.tar.gz
@@ -60,7 +60,7 @@ jobs:
     - name: Create Build Environment & Configure Cmake
       shell: bash
       working-directory: ./build
-      if: ${{matrix.link}} == "SHARED" 
+      if: ${{matrix.link}} == "SHARED"
       run: |
         [[ ${{ matrix.link }} == "SHARED" ]] && shared="ON" || shared="OFF"
         cmake .. \
@@ -81,8 +81,13 @@ jobs:
     - name: Test
       working-directory: ./build
       shell: bash
-      # Execute tests defined by the CMake configuration.  
+      # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
         make test
 
+    - name: Archive build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: trantor-artifacts-${{matrix.link}}-${{matrix.build-type}}-${{matrix.tls-provider}}-${{ matrix.os }}
+        path: ./build/

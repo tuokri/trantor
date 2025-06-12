@@ -67,7 +67,13 @@ jobs:
     - name: Test
       working-directory: ./build
       shell: bash
-      # Execute tests defined by the CMake configuration.  
+      # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
         make test
+
+    - name: Archive build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: trantor-artifacts-${{matrix.link}}-${{matrix.build-type}}-${{matrix.tls-provider}}-${{ matrix.os }}
+        path: ./build/
